@@ -14,7 +14,7 @@ def retrieve_guest_info(query: str) -> str:
         return "No matching guest information found."
     
 guest_info_retriever = Tool(
-    name="guest_info_retriever",
+    name="retrieve_guest_info",
     func=retrieve_guest_info,
     description="Retrieves detailed information about gala guests based on their name or relation."
 )
