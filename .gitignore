@@ -1,73 +1,22 @@
-# Byte-compiled / optimized / DLL files
+# Python cache and compiled files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
 # Virtual environments
 venv/
+.venv/
 env/
 ENV/
-.venv/
-.env/
 
-# PyInstaller
-*.manifest
-*.spec
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# mypy
-.mypy_cache/
-.dmypy.json
-
-# VS Code
+# VSCode settings
 .vscode/
 
-# macOS
+# OS generated files
 .DS_Store
-
-# Windows
 Thumbs.db
 Desktop.ini
 
@@ -78,9 +27,15 @@ Desktop.ini
 # Logs
 *.log
 
-# Local env files
+# Environment files
+.env
 .env.*
-.envrc
+
+# Build and dist
+build/
+dist/
+*.egg-info/
+.eggs/
 
 # Others
 *.swp
