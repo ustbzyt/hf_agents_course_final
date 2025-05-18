@@ -33,21 +33,17 @@ class BasicAgent:
         if not question or not question.strip():
             logging.info("Received empty question, skipping.")
             return ""
-        result = react_graph.invoke(
-            input={"messages": [], "question": question},
-            config={"callbacks": [langfuse_handler]}
-        )
-        messages = result["messages"]
+        messages = []
         while True:
+            result = react_graph.invoke(
+                input={"messages": messages, "question": question},
+                config={"callbacks": [langfuse_handler]}
+            )
+            messages = result["messages"]
             if isinstance(messages[-1], AIMessage) and getattr(messages[-1], "type", None) == "final":
                 answer = result.get("final_answer", messages[-1].content)
                 logging.info(f"Agent returning answer: {answer}")
                 return answer
-            result = react_graph.invoke(
-                input={"messages": [], "question": question},
-                config={"callbacks": [langfuse_handler]}
-            )
-            messages = result["messages"]
 
 def run_and_submit_all(profile: gr.OAuthProfile | None):
     space_id = os.getenv("SPACE_ID")
