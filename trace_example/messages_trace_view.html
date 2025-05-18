@@ -8,13 +8,20 @@
         h1, h2, h3 { color: #2c3e50; }
         .section { margin-bottom: 2em; }
         pre { background: #f4f4f4; padding: 1em; border-radius: 5px; overflow-x: auto; }
-        .msg { border-left: 4px solid #1a5276; margin-bottom: 1em; padding-left: 1em; background: #fff; }
-        .final { background: #eafaf1; border-left: 4px solid #27ae60; }
+        /* 消息类型样式 */
+        .msg { margin-bottom: 1em; padding-left: 1em; background: #fff; border-radius: 7px; border-left: 5px solid #1a5276; box-shadow: 0 2px 8px #0001; }
+        .msg.system { background: #eaf2fb; border-left: 5px solid #2471a3; }
+        .msg.human { background: #fffbe6; border-left: 5px solid #f39c12; }
+        .msg.intermediate { background: #f5e6ff; border-left: 5px solid #884ea0; }
+        .msg.tool { background: #eafaf1; border-left: 5px solid #27ae60; }
+        .msg.final { background: #e8f8f5; border-left: 5px solid #148f77; }
         .msg-type { color: #888; font-size: 0.95em; }
         .msg-id { color: #aaa; font-size: 0.9em; }
         .msg-func { color: #1a5276; font-size: 0.95em; }
         .msg-tool { color: #884ea0; font-size: 0.95em; }
         .step-label { font-weight: bold; color: #2c3e50; margin-bottom: 0.2em; }
+        /* 说明区域美化 */
+        .msg-explain { color: #1a5276; margin-top: 0.5em; background: #fafdff; border-left: 4px solid #aed6f1; padding: 0.5em 1em; border-radius: 0 5px 5px 0; font-size: 0.98em; }
     </style>
 </head>
 <body>
@@ -23,7 +30,7 @@
     <div class="section">
         <h2>Output Messages</h2>
         <!-- 步骤 1: 系统提示 -->
-        <div class="msg">
+        <div class="msg system">
             <div class="step-label">步骤 1</div>
             <div class="msg-type">system (ID: 5a6900f4-03b5-40d9-b916-d0ddd3601582)</div>
             <pre>You are a general AI assistant. I will ask you a question. Report your thoughts, and finish your answer with the following template: FINAL ANSWER: [YOUR FINAL ANSWER].
@@ -49,26 +56,32 @@ serpapi_search(query: str) -> str: Performs a web search using SerpAPI to retrie
 requests_get(url: str) -> str: Fetches the main content of a web page by URL.
 youtube_search(query: str) -> str: Searches YouTube for videos related to the query.
 </pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息为系统提示，定义了AI助手的角色、回答格式和使用工具的规则，为后续推理和工具调用设定了基础。
+            </div>
         </div>
         <!-- 步骤 2: 用户提问 -->
-        <div class="msg">
+        <div class="msg human">
             <div class="step-label">步骤 2</div>
             <div class="msg-type">human (ID: 146b20b7-a45f-4657-80bc-cfb983a872aa)</div>
             <pre>How many studio albums were published by Mercedes Sosa between 2000 and 2009 (included)? You can use the latest 2022 version of english wikipedia.</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息为用户提问，提出了需要AI助手解答的问题，并指定了可用信息来源。
+            </div>
         </div>
         <!-- 步骤 3: 大模型分析/决策（大模型序号 1） -->
-        <div class="msg">
+        <div class="msg intermediate">
             <div class="step-label">步骤 3</div>
             <div class="step-label" style="color:#2980b9;">大模型决策 1</div>
             <div class="msg-type">intermediate (ID: run--b22eeeed-c61e-4c03-a3eb-91623f5a2301-0)</div>
             <div class="msg-func">function_call: wikipedia</div>
             <pre>arguments: { "query": "Mercedes Sosa discography" }</pre>
-            <div style="color:#1a5276; margin-top:0.5em;">
+            <div class="msg-explain">
                 <b>说明：</b>这条消息表示大模型（Gemini）决定调用工具 <code>wikipedia</code>，并传递参数 <code>query: "Mercedes Sosa discography"</code>，以便通过维基百科检索 Mercedes Sosa 的专辑信息。这是 AI 推理过程中自动发起的工具调用请求。
             </div>
         </div>
         <!-- 步骤 4: 工具调用（工具序号 1） -->
-        <div class="msg">
+        <div class="msg tool">
             <div class="step-label">步骤 4</div>
             <div class="step-label" style="color:#27ae60;">工具调用 1</div>
             <div class="msg-type">tool (ID: 43c45480-d51b-4815-8bef-bd3601d12bf8)</div>
@@ -85,17 +98,23 @@ At documentary film titled Mercedes Sosa, Cantora un viaje íntimo was released 
 Page: Joan Baez discography
 Summary: This is a discography for American folk singer and songwriter Joan Baez.
 </pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息为工具调用的返回结果，展示了维基百科检索到的相关页面和摘要，供大模型后续推理使用。
+            </div>
         </div>
         <!-- 步骤 5: 大模型分析/决策（大模型序号 2） -->
-        <div class="msg">
+        <div class="msg intermediate">
             <div class="step-label">步骤 5</div>
             <div class="step-label" style="color:#2980b9;">大模型决策 2</div>
             <div class="msg-type">intermediate (ID: run--90313bd1-4146-43c1-bae2-fe3058ddc16e-0)</div>
             <div class="msg-func">function_call: wikipedia</div>
             <pre>arguments: { "query": "Mercedes Sosa discography 2000-2009" }</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息表示大模型根据上一步结果，进一步细化检索范围，尝试获取2000-2009年间的专辑信息。
+            </div>
         </div>
         <!-- 步骤 6: 工具调用（工具序号 2） -->
-        <div class="msg">
+        <div class="msg tool">
             <div class="step-label">步骤 6</div>
             <div class="step-label" style="color:#27ae60;">工具调用 2</div>
             <div class="msg-type">tool (ID: 703598f7-6dc4-452b-aab5-483f6bc13d6d)</div>
@@ -110,17 +129,23 @@ In the 1980s, after signing with Ariola Records, José rose to international pro
 
 Page: Víctor Heredia
 Summary: Víctor Heredia (born 24 January 1947, in Buenos Aires) is an Argentine singer-songwriter.</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息为工具调用的返回结果，展示了进一步检索到的相关页面和摘要，供大模型分析。
+            </div>
         </div>
         <!-- 步骤 7: 大模型分析/决策（大模型序号 3） -->
-        <div class="msg">
+        <div class="msg intermediate">
             <div class="step-label">步骤 7</div>
             <div class="step-label" style="color:#2980b9;">大模型决策 3</div>
             <div class="msg-type">intermediate (ID: run--b2971479-6e16-4ad6-9e68-fe4a1e5c4bdf-0)</div>
             <div class="msg-func">function_call: tavily_search_results_json</div>
             <pre>arguments: { "query": "Mercedes Sosa discography" }</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息表示大模型尝试调用 Tavily 搜索工具，以获取更多关于 Mercedes Sosa 专辑的信息。
+            </div>
         </div>
         <!-- 步骤 8: 工具调用（工具序号 3） -->
-        <div class="msg">
+        <div class="msg tool">
             <div class="step-label">步骤 8</div>
             <div class="step-label" style="color:#27ae60;">工具调用 3</div>
             <div class="msg-type">tool (ID: 7ea9fa3b-c80b-423e-a05b-052f5c830276)</div>
@@ -157,17 +182,23 @@ Summary: Víctor Heredia (born 24 January 1947, in Buenos Aires) is an Argentine
     "score": 0.68064564
   }
 ]</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息为 Tavily 搜索工具的返回结果，提供了多个相关网页的标题、链接和部分内容，供大模型进一步分析。
+            </div>
         </div>
         <!-- 步骤 9: 大模型分析/决策（大模型序号 4） -->
-        <div class="msg">
+        <div class="msg intermediate">
             <div class="step-label">步骤 9</div>
             <div class="step-label" style="color:#2980b9;">大模型决策 4</div>
             <div class="msg-type">intermediate (ID: run--7b707950-2336-4a6d-a249-09440e5e5934-0)</div>
             <div class="msg-func">function_call: wikipedia</div>
             <pre>arguments: { "query": "Mercedes Sosa albums" }</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息表示大模型尝试用不同关键词再次检索维基百科，以获取更全面的专辑信息。
+            </div>
         </div>
         <!-- 步骤 10: 工具调用（工具序号 4） -->
-        <div class="msg">
+        <div class="msg tool">
             <div class="step-label">步骤 10</div>
             <div class="step-label" style="color:#27ae60;">工具调用 4</div>
             <div class="msg-type">tool (ID: 238d518b-bd29-4d63-a6b2-9d9936dabe07)</div>
@@ -184,17 +215,23 @@ Summary: Cantora, un Viaje Íntimo  (English: Cantora, An Intimate Journey) is a
 At the 10th Annual Latin Grammy Awards, Cantora 1 was nominated for Album of the Year and won Best Folk Album and Best Recording Package, the latter award went to Alejandro Ros, the art director of the album. Additionally, Sosa won two out of five nominations for the albums at the Gardel Awards 2010, the double album was nominated for Album of the Year and Production of the Year and won Best DVD while both Cantora 1 and Cantora 2 were nominated for Best Female Folk Album, with the former winning the category.
 The double album was a commercial success, being certified platinum by the CAPIF selling more than 200,000 copies in Argentina, Cantora 1 was also certified platinum selling 40,000 copies while Cantora 2 was certified gold selling 20,000 copies. The album also peaked at numbers 22 and 8 at the Top Latin Albums and Latin Pop Albums charts in United States, respectively, being Sosa's only appearances on both charts.
 At documentary film titled Mercedes Sosa, Cantora un viaje íntimo was released on 2009, it was directed by Rodrigo Vila and features the recording process of the album as well as testimonies from the different guest artists that appeared on the project.</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息为工具调用的返回结果，补充了更多专辑相关信息，供大模型判断。
+            </div>
         </div>
         <!-- 步骤 11: 大模型分析/决策（大模型序号 5） -->
-        <div class="msg">
+        <div class="msg intermediate">
             <div class="step-label">步骤 11</div>
             <div class="step-label" style="color:#2980b9;">大模型决策 5</div>
             <div class="msg-type">intermediate (ID: run--be933fb9-144f-43a5-b994-deb41e352e42-0)</div>
             <div class="msg-func">function_call: wikipedia</div>
             <pre>arguments: { "query": "Mercedes Sosa discography" }</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息表示大模型再次尝试检索维基百科，进一步确认专辑信息。
+            </div>
         </div>
         <!-- 步骤 12: 工具调用（工具序号 5） -->
-        <div class="msg">
+        <div class="msg tool">
             <div class="step-label">步骤 12</div>
             <div class="step-label" style="color:#27ae60;">工具调用 5</div>
             <div class="msg-type">tool (ID: 3dfb80fb-c172-40c9-bf0d-4a7a3110795c)</div>
@@ -211,6 +248,9 @@ At documentary film titled Mercedes Sosa, Cantora un viaje íntimo was released 
 Page: Joan Baez discography
 Summary: This is a discography for American folk singer and songwriter Joan Baez.
 </pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息为工具调用的返回结果，进一步补充了专辑相关信息，供大模型最终判断。
+            </div>
         </div>
         <!-- 步骤 13: 最终答案 -->
         <div class="msg final">
@@ -225,6 +265,9 @@ Summary: This is a discography for American folk singer and songwriter Joan Baez
 Therefore, the total number of studio albums is 3.
 
 FINAL ANSWER: 3</pre>
+            <div class="msg-explain">
+                <b>说明：</b>这条消息为大模型的最终答案，基于前面所有检索和分析，给出了明确的结论和最终格式化答案。
+            </div>
         </div>
     </div>
     <div class="section">
