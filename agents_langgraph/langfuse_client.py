@@ -1,4 +1,5 @@
 import os
+import logging
 from langfuse.callback import CallbackHandler
 from typing import Optional
 

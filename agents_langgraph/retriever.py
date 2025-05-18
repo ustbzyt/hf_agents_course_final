@@ -1,3 +1,4 @@
+import logging
 from langchain_community.retrievers import BM25Retriever
 from langchain.tools import Tool
 from .prepare_dataset import load_and_prepare_docs
