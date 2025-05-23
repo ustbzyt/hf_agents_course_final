@@ -34,6 +34,11 @@ class BasicAgent:
             logging.info("Received empty question, skipping.")
             return ""
         messages = []
+        result = react_graph.invoke(
+                input={"messages": messages, "question": question},
+                config={"callbacks": [langfuse_handler]}
+            )
+        messages = result["messages"]
         while True:
             result = react_graph.invoke(
                 input={"messages": messages, "question": question},

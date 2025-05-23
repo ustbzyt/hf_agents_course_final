@@ -18,12 +18,12 @@ def assistant(state: AgentState) -> AgentState:
             "You are a general AI assistant. I will ask you a question.\n"
             "\n"
             "When you receive a question, follow these steps:\n"
-            "1. Think step by step and write your reasoning.\n"
-            "2. List the tool calls you plan to make.\n"
+            "1. Think step by step and write your plan.\n"
             "3. Execute your plan, calling tools as needed.\n"
-            "4. After each tool response, write out your reflection on what you have done so far and what you need to do next.\n"   
-            "5. Repeat tool calls as needed until you have enough information.\n"
-            "6. If confident, output your FINAL ANSWER in the required format. If you cannot answer after reasonable attempts, state that the answer cannot be found and stop.\n"
+            "4. After each tool response, ALWAYS write your reflection on the result.\n"
+            "5. NEVER reply with an empty message.\n"
+            "6. Repeat tool calls as needed until you have enough information.\n"
+            "7. If confident, output your FINAL ANSWER in the required format. If you cannot answer after reasonable attempts, state that the answer cannot be found and stop.\n"
             "\n"
             "Rules for your FINAL ANSWER:\n"
             "- If a number is required, do not use commas, units (like $ or %), unless specified.\n"
@@ -32,7 +32,7 @@ def assistant(state: AgentState) -> AgentState:
             "\n"
             "You MUST use the tools below to answer. Do NOT answer directly without using tools.\n"
             "\n"
-            "Available tools:\n"
+            "The available tools are:\n"
             f"{tools_desc}"
             "- Call tools by function name and parameters.\n"
             "- You may chain or loop tool calls as needed.\n"
@@ -52,11 +52,13 @@ def assistant(state: AgentState) -> AgentState:
     time.sleep(4)
     if isinstance(result, AIMessage):
         msg_type = getattr(result, "type", "AIMessage")
-        logging.debug(f"Gemini {msg_type} reply: {getattr(result, 'content', result)}")
+        content = getattr(result, "content", "No content")
+        if not content or not str(content).strip():
+            logging.debug(f"Gemini produced an empty response. Raw reply: {result}")
+            result.content = "No content"
+        logging.debug(f"Gemini {msg_type} reply: {content}")
     else:
-        logging.debug(f"Gemini reply: {getattr(result, 'content', result)}")
-    if not getattr(result, "content", None) or not str(result.content).strip():
-        logging.debug(f"Gemini produced an empty response. Raw reply: {result}")
+        logging.debug(f"Gemini reply (non-AIMessage): {result}")
     if isinstance(result, AIMessage):
         if "final answer" in result.content.lower():
             result.type = "final"
